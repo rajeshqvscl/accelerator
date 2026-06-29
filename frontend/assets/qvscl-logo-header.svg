@@ -1,0 +1,23 @@
+<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- Dark background box -->
+  <rect x="2" y="4" width="20" height="20" rx="2" fill="#0d3b52"/>
+  
+  <!-- Inner white rounded square -->
+  <rect x="6" y="8" width="12" height="12" rx="1" fill="#ffffff"/>
+  
+  <!-- Checkmark inside -->
+  <g stroke="#ff4d6d" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 8 15 L 11 18 L 17 12"/>
+  </g>
+  
+  <!-- Bar chart elements on right -->
+  <rect x="23" y="13" width="1" height="4" fill="#0d3b52"/>
+  <rect x="25" y="11" width="1" height="6" fill="#0d3b52"/>
+  <rect x="27" y="12" width="1" height="5" fill="#0d3b52"/>
+  
+  <!-- Upward arrow -->
+  <g stroke="#ff4d6d" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 23 15 L 30 9"/>
+    <path d="M 30 9 L 27 11.5 M 30 9 L 31.5 11"/>
+  </g>
+</svg>
