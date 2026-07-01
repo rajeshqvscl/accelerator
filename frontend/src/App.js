@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
 
+// Set this to your Render backend URL when deploying separately (e.g., "https://your-backend.onrender.com")
+const API_BASE_URL = "";
+
 const h = React.createElement;
 
 const fallbackData = {
@@ -195,7 +198,7 @@ function App() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/site-data")
+    fetch(`${API_BASE_URL}/api/site-data`)
       .then((response) => response.json())
       .then((payload) => {
         if (active) setData(payload);
@@ -787,7 +790,7 @@ function NewsletterForm() {
     event.preventDefault();
     setStatus({ state: "loading", message: "Saving..." });
     try {
-      const response = await fetch("/api/newsletter", {
+      const response = await fetch(`${API_BASE_URL}/api/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -847,7 +850,7 @@ function ApplicationModal({ mode, onClose }) {
     event.preventDefault();
     setStatus({ state: "loading", message: "Sending application..." });
     try {
-      const response = await fetch("/api/apply", {
+      const response = await fetch(`${API_BASE_URL}/api/apply`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
