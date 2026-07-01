@@ -387,8 +387,7 @@ function InteractiveLogo({ brand }) {
       onClick: (e) => { e.preventDefault(); document.querySelector("#home").scrollIntoView({ behavior: "smooth" }); },
       "aria-label": `${brand.name} home`,
     },
-    h("img", { src: "/assets/qvscl-logo.png", alt: "", className: "logo-image" }),
-    h("span", { className: "logo-text" }, "QVSCL")
+    h("img", { src: "/assets/qvscl-logo-white.png", alt: "", className: "logo-image" })
   );
 }
 
