@@ -12,7 +12,7 @@ const fallbackData = {
     tagline: "Accelerator & Venture Studio",
     linkedin: "https://www.linkedin.com/company/qvscl-accelerator-venture-studio/about/",
     reference: "https://www.indiaaccelerator.co",
-    email: "customer@qvscl.com",
+    email: "info@qvscl.com",
     address: "5th floor, Adani Miracle Miles, 507, Sector 60, Gurugram, Haryana 122098",
     phone: "9810646388",
   },
@@ -667,7 +667,7 @@ function ContactSection({ data }) {
   const mapsLink = "https://www.google.com/maps/place/QVSCL/@28.4009696,77.0912222,17z/data=!4m10!1m2!2m1!1s5th+floor,+Adani+Miracle+Miles,+507,+Sector+60,+Gurugram,+Haryana+122098!3m6!1s0x390d23d23468a4a9:0xc8ea4ae2ed8241a6!8m2!3d28.4010771!4d77.0933375!15sCkg1dGggZmxvb3IsIEFkYW5pIE1pcmFjbGUgTWlsZXMsIDUwNywgU2VjdG9yIDYwLCBHdXJ1Z3JhbSwgSGFyeWFuYSAxMjIwOThaRSJDNXRoIGZsb29yIGFkYW5pIG1pcmFjbGUgbWlsZXMgNTA3IHNlY3RvciA2MCBndXJ1Z3JhbSBoYXJ5YW5hIDEyMjA5OJIBHmJ1c2luZXNzX21hbmFnZW1lbnRfY29uc3VsdGFudJoBI0NoWkRTVWhOTUc5blMwVk9hV3h6TjI1aE16aDFXVnBuRUFF4AEA-gEECAAQPg!16s%2Fg%2F11x8w0hcc9?entry=ttu&g_ep=EgoyMDI2MDYxNi4wIKXMDSoASAFQAw%3D%3D";
   const mapsEmbed = "https://maps.google.com/maps?q=QVSCL+Gurugram&z=17&output=embed";
   const phone = data?.brand?.phone || "9810646388";
-  const email = data?.brand?.email || "customer@qvscl.com";
+  const email = data?.brand?.email || "info@qvscl.com";
   const linkedin = data?.brand?.linkedin || "https://www.linkedin.com/company/qvscl-accelerator-venture-studio/about/";
 
   return h("section", { className: "contact-section page-pad", id: "contact" },

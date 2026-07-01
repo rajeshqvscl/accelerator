@@ -18,7 +18,7 @@ SITE_DATA = {
         "tagline": "Accelerator & Venture Studio",
         "linkedin": "https://www.linkedin.com/company/qvscl-accelerator-venture-studio/about/",
         "reference": "https://www.indiaaccelerator.co",
-        "email": "customer@qvscl.com",
+        "email": "info@qvscl.com",
         "phone": "9810646388",
         "address": "5th floor, Adani Miracle Miles, 507, Sector 60, Gurugram, Haryana 122098",
     },
