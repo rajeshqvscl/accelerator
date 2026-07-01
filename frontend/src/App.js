@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "https://esm.sh/reac
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
 
 // Set this to your Render backend URL when deploying separately (e.g., "https://your-backend.onrender.com")
-const API_BASE_URL = "";
+const API_BASE_URL = "https://accelerator-backend.onrender.com";
 
 const h = React.createElement;
 
@@ -320,31 +320,31 @@ function Header({ data, onOpenApply }) {
       h("nav", { className: "desktop-nav", "aria-label": "Primary navigation" },
         navItems.map((item, index) => item.items
           ? h(
-              "div",
-              {
-                key: item.label,
-                className: "nav-dropdown",
-                onMouseEnter: () => {
-                  clearHoverTimer();
-                  setOpenMenu(index);
-                },
-                onMouseLeave: () => {
-                  hoverTimer.current = setTimeout(() => setOpenMenu(null), 150);
-                },
+            "div",
+            {
+              key: item.label,
+              className: "nav-dropdown",
+              onMouseEnter: () => {
+                clearHoverTimer();
+                setOpenMenu(index);
               },
-              h(
-                "button",
-                {
-                  className: "nav-trigger",
-                  type: "button",
-                  "aria-expanded": openMenu === index,
-                  onClick: () => setOpenMenu(openMenu === index ? null : index),
-                },
-                item.label,
-                h(Icon, { name: "chevronDown", size: 16 })
-              ),
-              openMenu === index && h(DropdownPanel, { items: item.items, onClose: closeAll })
-            )
+              onMouseLeave: () => {
+                hoverTimer.current = setTimeout(() => setOpenMenu(null), 150);
+              },
+            },
+            h(
+              "button",
+              {
+                className: "nav-trigger",
+                type: "button",
+                "aria-expanded": openMenu === index,
+                onClick: () => setOpenMenu(openMenu === index ? null : index),
+              },
+              item.label,
+              h(Icon, { name: "chevronDown", size: 16 })
+            ),
+            openMenu === index && h(DropdownPanel, { items: item.items, onClose: closeAll })
+          )
           : h("a", { key: item.label, className: "nav-link", href: item.href, onClick: (e) => { e.preventDefault(); scrollToSection(item.href); closeAll(); } }, item.label)
         )
       ),
@@ -365,9 +365,9 @@ function Header({ data, onOpenApply }) {
       navItems.map((item) => h("div", { className: "mobile-nav-group", key: item.label },
         item.items
           ? h(React.Fragment, null,
-              h("span", { className: "mobile-nav-heading" }, item.label),
-              item.items.map((child) => h("a", { key: child.label, href: child.href, onClick: (e) => { e.preventDefault(); scrollToSection(child.href); closeAll(); } }, child.label))
-            )
+            h("span", { className: "mobile-nav-heading" }, item.label),
+            item.items.map((child) => h("a", { key: child.label, href: child.href, onClick: (e) => { e.preventDefault(); scrollToSection(child.href); closeAll(); } }, child.label))
+          )
           : h("a", { href: item.href, onClick: (e) => { e.preventDefault(); scrollToSection(item.href); closeAll(); } }, item.label)
       )),
       h("button", { className: "btn btn-primary mobile-apply", type: "button", onClick: () => onOpenApply("founder") },
@@ -403,7 +403,7 @@ function DropdownPanel({ items, onClose }) {
     }
     onClose();
   };
-  
+
   return h("div", { className: "dropdown-panel" },
     items.map((item) => h("a", {
       key: item.label,
@@ -669,7 +669,7 @@ function ContactSection({ data }) {
   const phone = data?.brand?.phone || "9810646388";
   const email = data?.brand?.email || "customer@qvscl.com";
   const linkedin = data?.brand?.linkedin || "https://www.linkedin.com/company/qvscl-accelerator-venture-studio/about/";
-  
+
   return h("section", { className: "contact-section page-pad", id: "contact" },
     h("div", { className: "contact-info" },
       h("p", { className: "eyebrow scroll-in" }, "Get in Touch"),
@@ -682,13 +682,13 @@ function ContactSection({ data }) {
       ),
       h("div", { className: "contact-item" },
         h("strong", null, "📞 Phone"),
-        h("p", null, 
+        h("p", null,
           h("a", { href: `tel:${phone.replace(/[^0-9+]/g, '')}` }, phone)
         )
       ),
       h("div", { className: "contact-item" },
         h("strong", null, "📍 Address"),
-        h("p", null, 
+        h("p", null,
           h("a", { href: mapsLink, target: "_blank", rel: "noreferrer", className: "address-link" }, address)
         )
       ),
@@ -752,7 +752,7 @@ function Footer({ data, onOpenApply }) {
       ),
       h("div", { className: "footer-contact" },
         h("h3", null, "Contact Info"),
-        h("p", null, 
+        h("p", null,
           h("strong", null, "Email: "),
           h("a", { href: `mailto:${data.brand.email}` }, data.brand.email)
         ),
@@ -863,9 +863,11 @@ function ApplicationModal({ mode, onClose }) {
     }
   };
 
-  return h("div", { className: "modal-backdrop", role: "presentation", onMouseDown: (event) => {
-    if (event.target === event.currentTarget) onClose();
-  } },
+  return h("div", {
+    className: "modal-backdrop", role: "presentation", onMouseDown: (event) => {
+      if (event.target === event.currentTarget) onClose();
+    }
+  },
     h("section", { className: "application-modal", role: "dialog", "aria-modal": "true", "aria-labelledby": "modal-title", ref: dialogRef },
       h("button", { className: "icon-button close-button", type: "button", onClick: onClose, "aria-label": "Close application form" },
         h(Icon, { name: "x" })
