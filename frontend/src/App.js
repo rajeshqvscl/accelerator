@@ -169,6 +169,11 @@ const iconPaths = {
     "M4 4h16v16H4z",
     "m4 7 8 6 8-6",
   ],
+  layers: [
+    "M12 2 2 7l10 5 10-5-10-5Z",
+    "M2 17l10 5 10-5",
+    "M2 12l10 5 10-5",
+  ],
 };
 
 function Icon({ name, size = 20, stroke = 2, className = "" }) {
@@ -232,7 +237,7 @@ function App() {
       });
     }, observerOptions);
 
-    const elements = document.querySelectorAll(".scroll-in, .metric, .program-card, .highlight-item, .portfolio-card, .approach-item, .event-row, .resource-row");
+    const elements = document.querySelectorAll(".scroll-in, .metric, .program-card, .highlight-item, .portfolio-card, .approach-item, .event-row, .resource-row, .cta-card, .cta-header");
     elements.forEach(el => observer.observe(el));
 
     return () => observer.disconnect();
@@ -242,12 +247,15 @@ function App() {
     React.Fragment,
     null,
     h(Header, { data, onOpenApply: setModalMode }),
+    h("div", { id: "glass-bg" }),
+    h(ParticleBackground, null),
     h("main", null,
       h(Hero, { data, loading, onOpenApply: setModalMode }),
       h(Metrics, { stats: data.stats }),
       h(AboutSection, { data }),
       h(ProgramSection, { programs: data.programs, onOpenApply: setModalMode }),
-      h(PortfolioApproach, { portfolio: data.portfolio, approach: data.approach }),
+      h(PortfolioSection, { portfolio: data.portfolio }),
+      h(ApproachSection, { approach: data.approach }),
       h(JourneySection, { journey: data.journey }),
       h(ResourcesEvents, { resources: data.resources, events: data.events }),
       h(FounderCTA, { onOpenApply: setModalMode }),
@@ -514,36 +522,45 @@ function ProgramSection({ programs, onOpenApply }) {
   );
 }
 
-function PortfolioApproach({ portfolio, approach }) {
-  return h("section", { className: "split-section page-pad", id: "portfolio" },
-    h("div", { className: "portfolio-panel" },
-      h("p", { className: "eyebrow scroll-in" }, "Companies We've Backed"),
-      h("h2", { className: "scroll-in" }, "Portfolio signals from the QVSCL ecosystem"),
-      h("p", { className: "scroll-in" }, "A focused set of ventures from emergency assistance to learning infrastructure and workforce certification."),
-      h("div", { className: "portfolio-strip" },
-        portfolio.map((company) => h("article", { className: "portfolio-card", key: company.name, style: { "--brand-color": company.color } },
-          h("img", { className: "portfolio-logo", src: company.image, alt: `${company.name} logo` }),
+function PortfolioSection({ portfolio }) {
+  return h("section", { className: "portfolio-section page-pad", id: "portfolio" },
+    h("p", { className: "eyebrow scroll-in" }, "Companies We've Backed"),
+    h("h2", { className: "scroll-in" }, "Portfolio signals from the QVSCL ecosystem"),
+    h("p", { className: "portfolio-lead scroll-in" }, "A focused set of ventures from emergency assistance to learning infrastructure and workforce certification."),
+    h("div", { className: "portfolio-strip" },
+      portfolio.map((company) => h("article", {
+        className: "portfolio-card",
+        key: company.name,
+        style: { "--brand-color": company.color }
+      },
+        h("div", { className: "portfolio-logo-wrap" },
+          h("img", { className: "portfolio-logo", src: company.image, alt: `${company.name} logo` })
+        ),
+        h("div", { className: "portfolio-body" },
           h("div", { className: "portfolio-mark" }, company.name),
           h("h3", null, company.focus),
           h("p", { className: "portfolio-signal" }, company.signal),
           h("p", { className: "portfolio-detail" }, company.detail)
-        ))
-      ),
-      h("a", { className: "text-link", href: "#contact" },
-        "View Portfolio",
-        h(Icon, { name: "arrowRight", size: 16 })
-      )
+        )
+      ))
     ),
-    h("div", { className: "approach-panel", id: "approach" },
-      h("p", { className: "eyebrow scroll-in" }, "Our Approach"),
-      h("h2", { className: "scroll-in" }, "Founder support that stays practical"),
-      h("div", { className: "approach-grid" },
-        approach.map((item) => h("article", { className: "approach-item", key: item.title },
-          h("div", { className: "approach-icon" }, h(Icon, { name: item.icon, size: 22 })),
-          h("h3", null, item.title),
-          h("p", null, item.body)
-        ))
-      )
+    h("a", { className: "text-link", href: "#contact" },
+      "View Portfolio",
+      h(Icon, { name: "arrowRight", size: 16 })
+    )
+  );
+}
+
+function ApproachSection({ approach }) {
+  return h("section", { className: "approach-section page-pad", id: "approach" },
+    h("p", { className: "eyebrow scroll-in" }, "Our Approach"),
+    h("h2", { className: "scroll-in" }, "Founder support that stays practical"),
+    h("div", { className: "approach-grid" },
+      approach.map((item) => h("article", { className: "approach-item", key: item.title },
+        h("div", { className: "approach-icon" }, h(Icon, { name: item.icon, size: 22 })),
+        h("h3", null, item.title),
+        h("p", null, item.body)
+      ))
     )
   );
 }
@@ -716,15 +733,65 @@ function ContactSection({ data }) {
 }
 
 function FounderCTA({ onOpenApply }) {
-  return h("section", { className: "cta-band page-pad", id: "contact" },
-    h("div", null,
-      h("p", { className: "eyebrow scroll-in" }, "Let's Build Together"),
-      h("h2", { className: "scroll-in" }, "Bring QVSCL your startup, thesis, or ecosystem partnership."),
-      h("p", { className: "scroll-in" }, "Whether you are a founder with a bold idea or an organization looking to collaborate, QVSCL can help shape the next execution step.")
-    ),
-    h("button", { className: "btn btn-primary", type: "button", onClick: () => onOpenApply("founder") },
-      "Get in Touch",
-      h(Icon, { name: "arrowRight", size: 18 })
+  return h("section", { className: "founder-cta", id: "apply" },
+    h("div", { className: "cta-glow-orb cta-glow-1" }),
+    h("div", { className: "cta-glow-orb cta-glow-2" }),
+    h("div", { className: "cta-inner page-pad" },
+      h("div", { className: "cta-header scroll-in" },
+        h("p", { className: "eyebrow" }, "Let's Build Together"),
+        h("h2", null, "Bring your startup, thesis, or ecosystem partnership to QVSCL"),
+        h("p", { className: "cta-sub" }, "Whether you're a founder with a bold idea or an organization looking to collaborate — QVSCL is your unfair advantage in the journey from idea to investor-ready.")
+      ),
+      h("div", { className: "cta-cards" },
+        h("article", { className: "cta-card cta-card-founder" },
+          h("div", { className: "cta-card-icon" },
+            h(Icon, { name: "rocket", size: 28 })
+          ),
+          h("h3", null, "Apply as a Founder"),
+          h("p", null, "Co-build your startup from idea to launch. Get mentorship, funding access, and a dedicated growth team."),
+          h("ul", { className: "cta-perks" },
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Venture studio & accelerator track")),
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Mentor network + investor access")),
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "12-week cohort blueprint"))
+          ),
+          h("button", { className: "cta-card-btn cta-btn-green", type: "button", onClick: () => onOpenApply("founder") },
+            "Apply Now",
+            h(Icon, { name: "arrowRight", size: 16 })
+          )
+        ),
+        h("article", { className: "cta-card cta-card-partner" },
+          h("div", { className: "cta-card-icon cta-icon-violet" },
+            h(Icon, { name: "handshake", size: 28 })
+          ),
+          h("h3", null, "Partner with QVSCL"),
+          h("p", null, "Join as a corporate partner, angel investor, or ecosystem collaborator and co-shape India's next startup wave."),
+          h("ul", { className: "cta-perks" },
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Portfolio co-investment opportunities")),
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Exclusive deal flow access")),
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Strategic advisory relationships"))
+          ),
+          h("button", { className: "cta-card-btn cta-btn-violet", type: "button", onClick: () => onOpenApply("partner") },
+            "Partner With Us",
+            h(Icon, { name: "arrowRight", size: 16 })
+          )
+        ),
+        h("article", { className: "cta-card cta-card-studio" },
+          h("div", { className: "cta-card-icon cta-icon-gold" },
+            h(Icon, { name: "layers", size: 28 })
+          ),
+          h("h3", null, "Explore Venture Studio"),
+          h("p", null, "Have an idea but no team yet? QVSCL's venture studio co-builds startups from scratch with you as founding partner."),
+          h("ul", { className: "cta-perks" },
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Co-founding & equity structure")),
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Team building & product development")),
+            h("li", null, h(Icon, { name: "check", size: 14 }), h("span", null, "Go-to-market from day one"))
+          ),
+          h("button", { className: "cta-card-btn cta-btn-gold", type: "button", onClick: () => onOpenApply("studio") },
+            "Explore Studio",
+            h(Icon, { name: "arrowRight", size: 16 })
+          )
+        )
+      )
     )
   );
 }
@@ -931,6 +998,113 @@ function modeLabel(mode) {
   if (mode === "partner") return "Partner With QVSCL";
   if (mode === "studio") return "Explore Venture Studio";
   return "Apply as Founder";
+}
+
+function ParticleBackground() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animId;
+
+    // --- Orbs (large animated glows) ---
+    const orbs = [
+      { x: 0.12, y: 0.20, r: 0.38, color: [6, 180, 80],   speed: 0.00007, phase: 0 },
+      { x: 0.88, y: 0.75, r: 0.32, color: [4, 130, 60],   speed: 0.00009, phase: 2.1 },
+      { x: 0.45, y: 0.55, r: 0.26, color: [20, 200, 120], speed: 0.00006, phase: 4.2 },
+      { x: 0.75, y: 0.15, r: 0.18, color: [61, 214, 140], speed: 0.00007, phase: 1.5 },
+    ];
+
+    // --- Particles ---
+    const COUNT = 80;
+    const MAX_DIST = 120;
+    let particles = [];
+
+    const resize = () => {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    for (let i = 0; i < COUNT; i++) {
+      particles.push({
+        x:  Math.random() * window.innerWidth,
+        y:  Math.random() * window.innerHeight,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r:  Math.random() * 1.2 + 0.4,
+      });
+    }
+
+    let t = 0;
+    const draw = () => {
+      t += 1;
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Draw glow orbs
+      orbs.forEach(orb => {
+        const wave = Math.sin(t * orb.speed * 1000 + orb.phase);
+        const cx = (orb.x + wave * 0.06) * W;
+        const cy = (orb.y + Math.cos(t * orb.speed * 800 + orb.phase) * 0.08) * H;
+        const radius = orb.r * Math.max(W, H);
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+        const [r, g, b] = orb.color;
+        grad.addColorStop(0,   `rgba(${r},${g},${b},0.15)`);
+        grad.addColorStop(0.4, `rgba(${r},${g},${b},0.08)`);
+        grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      });
+
+      // Move + wrap particles
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      });
+
+      // Particle lines
+      for (let i = 0; i < COUNT; i++) {
+        for (let j = i + 1; j < COUNT; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            ctx.strokeStyle = `rgba(61,214,140,${(1 - dist / MAX_DIST) * 0.18})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Particle dots
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(61,214,140,0.55)`;
+        ctx.fill();
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return h("canvas", { id: "particles-canvas", ref: canvasRef });
 }
 
 createRoot(document.getElementById("root")).render(h(App));
