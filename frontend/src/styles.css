@@ -122,6 +122,10 @@ img { display: block; max-width: 100%; }
   0%,100% { box-shadow: 0 0 0 0 rgba(61,214,140,0); }
   50%      { box-shadow: 0 0 0 6px rgba(61,214,140,0.12); }
 }
+@keyframes statFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 .scroll-in,
 .section-heading,
@@ -390,7 +394,7 @@ img { display: block; max-width: 100%; }
   inset: 0;
   background:
     linear-gradient(90deg, var(--bg) 0%, rgba(19,22,28,0.82) 40%, rgba(19,22,28,0.15) 80%),
-    linear-gradient(180deg, rgba(19,22,28,0.6) 0%, rgba(19,22,28,0.0) 55%, rgba(19,22,28,0.8) 100%);
+    linear-gradient(180deg, rgba(19,22,28,0.6) 0%, rgba(19,22,28,0.0) 40%, rgba(19,22,28,0.0) 100%);
 }
 .hero-content {
   position: relative;
@@ -447,17 +451,20 @@ img { display: block; max-width: 100%; }
 .metric {
   min-height: 140px;
   padding: 24px 28px;
-  background: var(--bg-card);
+  background: rgba(27, 31, 39, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-right: 1px solid var(--border);
 }
 .metric:last-child { border-right: 0; }
-.metric:hover { background: var(--bg-card2); }
+.metric:hover { background: rgba(32, 36, 45, 0.4); }
 .metric strong {
   display: block;
   color: var(--green);
   font-size: 2.2rem;
   font-weight: 900;
   line-height: 1;
+  animation: statFadeIn 400ms ease both;
 }
 .metric span {
   display: block;
@@ -465,12 +472,14 @@ img { display: block; max-width: 100%; }
   font-weight: 800;
   font-size: 0.95rem;
   color: var(--ink);
+  animation: statFadeIn 400ms ease 80ms both;
 }
 .metric p {
   margin: 6px 0 0;
   color: var(--muted);
   font-size: 0.85rem;
   line-height: 1.45;
+  animation: statFadeIn 400ms ease 160ms both;
 }
 
 /* ─── Sections ───────────────────────────────────────────── */
@@ -784,7 +793,7 @@ img { display: block; max-width: 100%; }
 /* ─── Journey ────────────────────────────────────────────── */
 .journey {
   padding: 90px 0;
-  background: #111a11;
+  background: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -1313,7 +1322,7 @@ img { display: block; max-width: 100%; }
   .hero-scrim {
     background:
       linear-gradient(90deg, var(--bg) 0%, rgba(19,22,28,0.84) 66%, rgba(19,22,28,0.35) 100%),
-      linear-gradient(180deg, rgba(19,22,28,0.6) 0%, rgba(19,22,28,0.06) 48%, rgba(19,22,28,0.85) 100%);
+      linear-gradient(180deg, rgba(19,22,28,0.6) 0%, rgba(19,22,28,0.0) 40%, rgba(19,22,28,0.0) 100%);
   }
   .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); margin-top: -30px; }
   .metric { min-height: 130px; padding: 20px; border-right: 0; border-bottom: 1px solid var(--border); }

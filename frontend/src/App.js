@@ -107,6 +107,27 @@ const fallbackData = {
   ],
 };
 
+const statCycles = [
+  [
+    { value: "50+", label: "Portfolio Companies", detail: "Building the future ecosystem" },
+    { value: "₹500Cr+", label: "Capital Deployed", detail: "Across promising ventures" },
+    { value: "85%", label: "Follow-on Rate", detail: "Founder success ratio" },
+    { value: "18mo", label: "Avg to Series A", detail: "Accelerated timeline" },
+  ],
+  [
+    { value: "2", label: "Founder pathways", detail: "Venture studio and accelerator" },
+    { value: "4", label: "Support pillars", detail: "Build, mentor, fundraise, scale" },
+    { value: "3", label: "Portfolio signals", detail: "GoAid, LabBuddy, WeSkills" },
+    { value: "12wk", label: "Cohort blueprint", detail: "Validation to investor readiness" },
+  ],
+  [
+    { value: "₹10Cr+", label: "Avg Round Size", detail: "For portfolio companies" },
+    { value: "20+", label: "Active Mentors", detail: "Across domains and functions" },
+    { value: "6+", label: "Industry Verticals", detail: "Deep tech, health, fintech" },
+    { value: "3yr", label: "Founder Journey", detail: "Idea to Series A track" },
+  ],
+];
+
 const iconPaths = {
   arrowRight: [
     "M5 12h14",
@@ -200,6 +221,7 @@ function App() {
   const [data, setData] = useState(fallbackData);
   const [loading, setLoading] = useState(true);
   const [modalMode, setModalMode] = useState(null);
+  const [statIndex, setStatIndex] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -222,6 +244,13 @@ function App() {
   useEffect(() => {
     document.body.classList.toggle("modal-open", Boolean(modalMode));
   }, [modalMode]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStatIndex(prev => (prev + 1) % statCycles.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const observerOptions = {
@@ -251,7 +280,7 @@ function App() {
     h(ParticleBackground, null),
     h("main", null,
       h(Hero, { data, loading, onOpenApply: setModalMode }),
-      h(Metrics, { stats: data.stats }),
+      h(Metrics, { stats: statCycles[statIndex] }),
       h(AboutSection, { data }),
       h(ProgramSection, { programs: data.programs, onOpenApply: setModalMode }),
       h(PortfolioSection, { portfolio: data.portfolio }),
@@ -460,10 +489,10 @@ function Hero({ data, loading, onOpenApply }) {
 
 function Metrics({ stats }) {
   return h("section", { className: "metrics page-pad", "aria-label": "QVSCL operating data" },
-    stats.map((stat) => h("article", { className: "metric", key: stat.label },
-      h("strong", null, stat.value),
-      h("span", null, stat.label),
-      h("p", null, stat.detail)
+    stats.map((stat, i) => h("article", { className: "metric", key: i },
+      h("strong", { key: stat.value }, stat.value),
+      h("span", { key: stat.label }, stat.label),
+      h("p", { key: stat.detail }, stat.detail)
     ))
   );
 }
