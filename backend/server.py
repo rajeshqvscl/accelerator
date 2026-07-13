@@ -189,6 +189,10 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         route = urlparse(self.path).path
+
+        if route in ("/", ""):
+            self.send_json({"status": "ok", "message": "QVSCL Accelerator Backend is running"})
+            return
         if route == "/api/health":
             self.send_json({"ok": True, "service": "qvscl-accelerator", "time": utc_now()})
             return
@@ -215,7 +219,7 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
             else:
                 self.send_error(HTTPStatus.NOT_FOUND, "Blog not found")
             return
-        return self.serve_frontend(route)
+        self.send_json({"status": "ok", "message": "QVSCL Accelerator Backend is running"})
 
     def do_POST(self):
         route = urlparse(self.path).path
