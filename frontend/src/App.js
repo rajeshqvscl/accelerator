@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
 
-// Set to your Render backend URL when deploying the frontend separately (e.g., "https://your-backend.onrender.com")
-// Empty string means API calls go to the same origin (works for local dev and same-server deployment)
-const API_BASE_URL = "";
+// API base: relative for local dev, absolute for Render deployment
+const API_BASE_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+  ? ""
+  : "https://accelerator-backend.onrender.com";
 
 const h = React.createElement;
 
