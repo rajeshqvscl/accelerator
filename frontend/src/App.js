@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from "https://esm.sh/react@18.2.0";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "https://esm.sh/react@18.2.0";
 import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
 
-// Set this to your Render backend URL when deploying separately (e.g., "https://your-backend.onrender.com")
-const API_BASE_URL = "https://accelerator-backend.onrender.com";
+// Set to your Render backend URL when deploying the frontend separately (e.g., "https://your-backend.onrender.com")
+// Empty string means API calls go to the same origin (works for local dev and same-server deployment)
+const API_BASE_URL = "";
 
 const h = React.createElement;
 
@@ -222,6 +223,44 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [modalMode, setModalMode] = useState(null);
   const [statIndex, setStatIndex] = useState(0);
+  const [page, setPage] = useState(() => {
+    const path = window.location.pathname;
+    if (path.startsWith("/insights/")) return { view: "article", slug: path.replace("/insights/", "") };
+    if (path === "/insights") return { view: "insights" };
+    return { view: "main" };
+  });
+
+  const navigate = useCallback((to) => {
+    if (to.startsWith("#")) {
+      if (page.view !== "main") {
+        window.history.pushState({}, "", "/");
+        setPage({ view: "main" });
+        requestAnimationFrame(() => {
+          const el = document.querySelector(to);
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        });
+      } else {
+        const el = document.querySelector(to);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
+    }
+    window.history.pushState({}, "", to);
+    if (to.startsWith("/insights/")) setPage({ view: "article", slug: to.replace("/insights/", "") });
+    else if (to === "/insights") setPage({ view: "insights" });
+    else setPage({ view: "main" });
+  }, [page.view]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const path = window.location.pathname;
+      if (path.startsWith("/insights/")) setPage({ view: "article", slug: path.replace("/insights/", "") });
+      else if (path === "/insights") setPage({ view: "insights" });
+      else setPage({ view: "main" });
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -252,6 +291,25 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  const mainContent = page.view === "insights"
+    ? h(InsightsPage, { navigate })
+    : page.view === "article"
+      ? h(BlogPostPage, { slug: page.slug, navigate })
+      : h(HomePage, { data, loading, onOpenApply: setModalMode, statIndex, setStatIndex, navigate });
+
+  return h(
+    React.Fragment,
+    null,
+    h(Header, { data, onOpenApply: setModalMode, navigate, pageView: page.view }),
+    h("div", { id: "glass-bg" }),
+    h(ParticleBackground, null),
+    mainContent,
+    h(Footer, { data, onOpenApply: setModalMode, navigate }),
+    modalMode && h(ApplicationModal, { mode: modalMode, onClose: () => setModalMode(null) })
+  );
+}
+
+function HomePage({ data, loading, onOpenApply, statIndex, setStatIndex }) {
   useEffect(() => {
     const observerOptions = {
       threshold: 0.1,
@@ -272,30 +330,21 @@ function App() {
     return () => observer.disconnect();
   }, [loading]);
 
-  return h(
-    React.Fragment,
-    null,
-    h(Header, { data, onOpenApply: setModalMode }),
-    h("div", { id: "glass-bg" }),
-    h(ParticleBackground, null),
-    h("main", null,
-      h(Hero, { data, loading, onOpenApply: setModalMode }),
-      h(Metrics, { stats: statCycles[statIndex] }),
-      h(AboutSection, { data }),
-      h(ProgramSection, { programs: data.programs, onOpenApply: setModalMode }),
-      h(PortfolioSection, { portfolio: data.portfolio }),
-      h(ApproachSection, { approach: data.approach }),
-      h(JourneySection, { journey: data.journey }),
-      h(ResourcesEvents, { resources: data.resources, events: data.events }),
-      h(FounderCTA, { onOpenApply: setModalMode }),
-      h(ContactSection, { data })
-    ),
-    h(Footer, { data, onOpenApply: setModalMode }),
-    modalMode && h(ApplicationModal, { mode: modalMode, onClose: () => setModalMode(null) })
+  return h("main", null,
+    h(Hero, { data, loading, onOpenApply }),
+    h(Metrics, { stats: statCycles[statIndex] }),
+    h(AboutSection, { data }),
+    h(ProgramSection, { programs: data.programs, onOpenApply }),
+    h(PortfolioSection, { portfolio: data.portfolio }),
+    h(ApproachSection, { approach: data.approach }),
+    h(JourneySection, { journey: data.journey }),
+    h(ResourcesEvents, { resources: data.resources, events: data.events }),
+    h(FounderCTA, { onOpenApply }),
+    h(ContactSection, { data })
   );
 }
 
-function Header({ data, onOpenApply }) {
+function Header({ data, onOpenApply, navigate, pageView }) {
   const [openMenu, setOpenMenu] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const hoverTimer = useRef(null);
@@ -319,6 +368,13 @@ function Header({ data, onOpenApply }) {
     },
     { label: "Portfolio", href: "#portfolio" },
     {
+      label: "Insights",
+      items: [
+        { label: "All Insights", href: "/insights", body: "Browse all articles and updates from QVSCL." },
+        { label: "Founder Guides", href: "/insights", body: "Practical guides for building and fundraising." },
+      ],
+    },
+    {
       label: "Resources",
       items: [
         { label: "Guides", href: "#resources", body: "Founder playbooks and checklists." },
@@ -330,10 +386,7 @@ function Header({ data, onOpenApply }) {
   ], [data.brand.linkedin]);
 
   const scrollToSection = (href) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    navigate(href);
   };
 
   const clearHoverTimer = () => {
@@ -353,7 +406,7 @@ function Header({ data, onOpenApply }) {
     "header",
     { className: "site-header" },
     h("div", { className: "header-shell" },
-      h(InteractiveLogo, { brand: data.brand }),
+      h(InteractiveLogo, { brand: data.brand, navigate }),
       h("nav", { className: "desktop-nav", "aria-label": "Primary navigation" },
         navItems.map((item, index) => item.items
           ? h(
@@ -380,7 +433,7 @@ function Header({ data, onOpenApply }) {
               item.label,
               h(Icon, { name: "chevronDown", size: 16 })
             ),
-            openMenu === index && h(DropdownPanel, { items: item.items, onClose: closeAll })
+            openMenu === index && h(DropdownPanel, { items: item.items, onClose: closeAll, navigate })
           )
           : h("a", { key: item.label, className: "nav-link", href: item.href, onClick: (e) => { e.preventDefault(); scrollToSection(item.href); closeAll(); } }, item.label)
         )
@@ -403,7 +456,7 @@ function Header({ data, onOpenApply }) {
         item.items
           ? h(React.Fragment, null,
             h("span", { className: "mobile-nav-heading" }, item.label),
-            item.items.map((child) => h("a", { key: child.label, href: child.href, onClick: (e) => { e.preventDefault(); scrollToSection(child.href); closeAll(); } }, child.label))
+            item.items.map((child) => h("a", { key: child.label, href: child.href, onClick: (e) => { e.preventDefault(); child.href.startsWith("/") ? navigate(child.href) : scrollToSection(child.href); closeAll(); } }, child.label))
           )
           : h("a", { href: item.href, onClick: (e) => { e.preventDefault(); scrollToSection(item.href); closeAll(); } }, item.label)
       )),
@@ -415,27 +468,33 @@ function Header({ data, onOpenApply }) {
   );
 }
 
-function InteractiveLogo({ brand }) {
+function InteractiveLogo({ brand, navigate }) {
   return h(
     "a",
     {
       className: "logo-lockup",
-      href: "#home",
-      onClick: (e) => { e.preventDefault(); document.querySelector("#home").scrollIntoView({ behavior: "smooth" }); },
+      href: "#/",
+      onClick: (e) => { e.preventDefault(); navigate("/"); },
       "aria-label": `${brand.name} home`,
     },
     h("img", { src: "/assets/qvscl-logo-white.png", alt: "", className: "logo-image" })
   );
 }
 
-function DropdownPanel({ items, onClose }) {
+function DropdownPanel({ items, onClose, navigate }) {
   const handleClick = (e, href) => {
-    if (!href.startsWith("http")) {
+    if (href.startsWith("http")) {
       e.preventDefault();
+      window.open(href, "_blank", "noreferrer");
+      onClose();
+      return;
+    }
+    e.preventDefault();
+    if (href.startsWith("/")) {
+      navigate(href);
+    } else {
       const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+      if (element) element.scrollIntoView({ behavior: "smooth" });
     }
     onClose();
   };
@@ -446,8 +505,6 @@ function DropdownPanel({ items, onClose }) {
       className: "dropdown-item",
       href: item.href,
       onClick: (e) => handleClick(e, item.href),
-      target: item.href.startsWith("http") ? "_blank" : undefined,
-      rel: item.href.startsWith("http") ? "noreferrer" : undefined,
     },
       h("span", null, item.label),
       h("small", null, item.body)
@@ -825,11 +882,158 @@ function FounderCTA({ onOpenApply }) {
   );
 }
 
-function Footer({ data, onOpenApply }) {
+function InsightsPage({ navigate }) {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetch(`${API_BASE_URL}/api/blogs`)
+      .then((r) => r.json())
+      .then((data) => { if (active) setBlogs(data); })
+      .catch(() => { if (active) setBlogs([]); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const categoryColors = {
+    "Founder Insights": "var(--green)",
+    "Venture Building": "var(--violet)",
+    "Operations": "var(--gold)",
+    "Programs": "var(--green)",
+    "Fundraising": "var(--violet-hi)",
+    "General": "var(--muted)",
+  };
+
+  return h("main", { className: "insights-page page-pad" },
+    h("div", { className: "insights-header" },
+      h("p", { className: "eyebrow" }, "QVSCL Insights"),
+      h("h1", null, "Ideas that work"),
+      h("p", { className: "insights-subtitle" }, "Perspectives on venture building, fundraising, and growing startups that matter.")
+    ),
+    loading
+      ? h("div", { className: "insights-loading" }, "Loading insights...")
+      : blogs.length === 0
+        ? h("div", { className: "insights-empty" }, "No insights published yet. Check back soon.")
+        : h("div", { className: "insights-grid" },
+          blogs.map((blog) =>
+            h("article", {
+              key: blog.id,
+              className: "blog-card",
+              style: { "--cat-color": categoryColors[blog.category] || "var(--green)" },
+            },
+              h("div", { className: "blog-card-image" },
+                h("img", {
+                  src: blog.image,
+                  alt: "",
+                  loading: "lazy",
+                  onError: (e) => {
+                    e.target.style.display = "none";
+                    e.target.parentElement.classList.add("blog-card-img-fallback");
+                  },
+                }),
+                h("span", { className: "blog-card-category", style: { background: categoryColors[blog.category] || "var(--green)" } }, blog.category)
+              ),
+              h("div", { className: "blog-card-body" },
+                h("h3", null, blog.title),
+                h("p", { className: "blog-card-excerpt" }, blog.excerpt),
+                h("div", { className: "blog-card-meta" },
+                  h("span", null, blog.author),
+                  h("span", null, formatDate(blog.date)),
+                ),
+                h("a", { className: "text-link", href: `/insights/${blog.slug}`, onClick: (e) => { e.preventDefault(); navigate(`/insights/${blog.slug}`); } },
+                  "Read More",
+                  h(Icon, { name: "arrowRight", size: 16 })
+                )
+              )
+            )
+          )
+        )
+  );
+}
+
+function BlogPostPage({ slug, navigate }) {
+  const [blog, setBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetch(`${API_BASE_URL}/api/blogs/${slug}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Blog not found");
+        return r.json();
+      })
+      .then((data) => { if (active) setBlog(data); })
+      .catch(() => { if (active) setBlog(null); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [slug]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
+
+  if (loading) {
+    return h("main", { className: "blog-post-page page-pad" },
+      h("div", { className: "blog-post-loading" }, "Loading article...")
+    );
+  }
+
+  if (!blog) {
+    return h("main", { className: "blog-post-page page-pad" },
+      h("div", { className: "blog-post-error" },
+        h("h1", null, "Article not found"),
+        h("p", null, "The insight you're looking for doesn't exist or has been removed."),
+        h("a", { className: "btn btn-primary", href: "/insights", onClick: (e) => { e.preventDefault(); navigate("/insights"); } }, "Back to Insights")
+      )
+    );
+  }
+
+  return h("main", { className: "blog-post-page page-pad" },
+    h("div", { className: "blog-post-back" },
+      h("a", { className: "text-link", href: "/insights", onClick: (e) => { e.preventDefault(); navigate("/insights"); } },
+        h(Icon, { name: "arrowRight", size: 16, className: "back-arrow" }),
+        "Back to Insights"
+      )
+    ),
+    blog.image && h("div", { className: "blog-post-cover" },
+      h("img", {
+        src: blog.image,
+        alt: blog.title,
+        onError: (e) => {
+          e.target.style.display = "none";
+          e.target.parentElement.classList.add("blog-post-cover-fallback");
+        },
+      })
+    ),
+    h("article", { className: "blog-post-article" },
+      h("div", { className: "blog-post-meta" },
+        blog.category && h("span", { className: "blog-post-category" }, blog.category),
+        h("span", null, blog.author),
+        h("span", null, formatDate(blog.date)),
+      ),
+      h("h1", null, blog.title),
+      h("div", { className: "blog-post-content", dangerouslySetInnerHTML: { __html: blog.content } }),
+    ),
+  );
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function Footer({ data, onOpenApply, navigate }) {
   return h("footer", { className: "site-footer" },
     h("div", { className: "footer-top page-pad" },
       h("div", { className: "footer-brand" },
-        h(InteractiveLogo, { brand: data.brand }),
+        h(InteractiveLogo, { brand: data.brand, navigate }),
         h("p", null, "Building and accelerating the next generation of impact-driven startups."),
         h("div", { className: "social-links" },
           h("a", { href: data.brand.linkedin, target: "_blank", rel: "noreferrer", "aria-label": "QVSCL on LinkedIn" },
@@ -841,9 +1045,9 @@ function Footer({ data, onOpenApply }) {
         )
       ),
       h("div", { className: "footer-links" },
-        h(FooterColumn, { title: "Company", links: ["About Us", "Our Team", "Careers", "Blog"] }),
-        h(FooterColumn, { title: "Programs", links: ["Venture Studio", "Accelerator", "Bootcamps", "Mentorship"] }),
-        h(FooterColumn, { title: "Resources", links: ["Guides", "Templates", "Articles", "FAQ"] })
+        h(FooterColumn, { title: "Company", links: [{ label: "About Us", href: "#about" }, { label: "Blog", href: "/insights" }], navigate }),
+        h(FooterColumn, { title: "Programs", links: [{ label: "Venture Studio", href: "#programs" }, { label: "Accelerator", href: "#programs" }], navigate }),
+        h(FooterColumn, { title: "Resources", links: [{ label: "Guides", href: "#resources" }, { label: "Events", href: "#events" }], navigate })
       ),
       h("div", { className: "footer-contact" },
         h("h3", null, "Contact Info"),
@@ -870,10 +1074,14 @@ function Footer({ data, onOpenApply }) {
   );
 }
 
-function FooterColumn({ title, links }) {
+function FooterColumn({ title, links, navigate }) {
   return h("div", { className: "footer-column" },
     h("h3", null, title),
-    links.map((link) => h("a", { key: link, href: "#home" }, link))
+    links.map((link) =>
+      link.href.startsWith("/")
+        ? h("a", { key: link.label, href: link.href, onClick: (e) => { e.preventDefault(); navigate(link.href); } }, link.label)
+        : h("a", { key: link.label, href: link.href, onClick: (e) => { e.preventDefault(); navigate(link.href); } }, link.label)
+    )
   );
 }
 

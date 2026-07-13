@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1035"/>
+      <stop offset="50%" style="stop-color:#2d1b5e"/>
+      <stop offset="100%" style="stop-color:#1a1035"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b6cf5"/>
+      <stop offset="100%" style="stop-color:#6c4fdb"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <circle cx="150" cy="80" r="140" fill="rgba(139,108,245,0.07)"/>
+  <circle cx="650" cy="350" r="160" fill="rgba(139,108,245,0.05)"/>
+  <rect x="50" y="50" width="700" height="2" rx="1" fill="rgba(139,108,245,0.15)"/>
+  <rect x="50" y="398" width="700" height="2" rx="1" fill="rgba(139,108,245,0.15)"/>
+  <g transform="translate(400,200)">
+    <rect x="-60" y="-60" width="120" height="120" rx="16" fill="url(#accent)" opacity="0.15"/>
+    <rect x="-35" y="-8" width="70" height="16" rx="4" fill="#8b6cf5"/>
+    <rect x="-35" y="16" width="70" height="16" rx="4" fill="rgba(139,108,245,0.4)"/>
+    <circle cx="-25" cy="0" r="4" fill="#fff"/>
+    <circle cx="0" cy="0" r="4" fill="#fff"/>
+    <circle cx="25" cy="0" r="4" fill="#fff"/>
+  </g>
+  <text x="50" y="310" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#8b6cf5" letter-spacing="-0.02">Investor Updates</text>
+  <text x="50" y="342" font-family="Inter, sans-serif" font-size="16" font-weight="400" fill="rgba(200,205,216,0.7)" letter-spacing="0.02">Turn informational emails into follow-on rounds</text>
+</svg>

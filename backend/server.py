@@ -3,6 +3,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import argparse
 import json
+import re
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
@@ -10,6 +11,34 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1]
 FRONTEND_DIR = ROOT / "frontend"
 DATA_DIR = ROOT / "data"
+BLOGS_FILE = DATA_DIR / "blogs.json"
+
+
+def load_blogs():
+    if not BLOGS_FILE.exists():
+        return []
+    with BLOGS_FILE.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_blogs(blogs):
+    DATA_DIR.mkdir(exist_ok=True)
+    with BLOGS_FILE.open("w", encoding="utf-8") as f:
+        json.dump(blogs, f, indent=2, ensure_ascii=False)
+
+
+def find_blog(slug):
+    blogs = load_blogs()
+    for b in blogs:
+        if b["slug"] == slug:
+            return b
+    return None
+
+
+def next_blog_id(blogs):
+    if not blogs:
+        return 1
+    return max(b["id"] for b in blogs) + 1
 
 
 SITE_DATA = {
@@ -154,7 +183,7 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(HTTPStatus.NO_CONTENT)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
@@ -166,11 +195,31 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
         if route == "/api/site-data":
             self.send_json(SITE_DATA)
             return
+        if route == "/api/blogs":
+            blogs = load_blogs()
+            listing = [
+                {"id": b["id"], "slug": b["slug"], "title": b["title"],
+                 "excerpt": b["excerpt"], "author": b["author"],
+                 "date": b["date"], "image": b["image"],
+                 "category": b["category"]}
+                for b in blogs
+            ]
+            self.send_json(listing)
+            return
+        match = re.match(r"^/api/blogs/(.+)$", route)
+        if match:
+            slug = match.group(1)
+            blog = find_blog(slug)
+            if blog:
+                self.send_json(blog)
+            else:
+                self.send_error(HTTPStatus.NOT_FOUND, "Blog not found")
+            return
         return self.serve_frontend(route)
 
     def do_POST(self):
         route = urlparse(self.path).path
-        if route not in {"/api/apply", "/api/newsletter"}:
+        if route not in {"/api/apply", "/api/newsletter", "/api/admin/blogs"}:
             self.send_error(HTTPStatus.NOT_FOUND, "Unknown API route")
             return
 
@@ -178,6 +227,32 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
             payload = self.read_json_body()
         except ValueError as exc:
             self.send_json({"ok": False, "message": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+            return
+
+        if route == "/api/admin/blogs":
+            required = ["title", "slug", "excerpt", "content"]
+            missing = [field for field in required if not payload.get(field)]
+            if missing:
+                self.send_json(
+                    {"ok": False, "message": f"Missing required field: {', '.join(missing)}"},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
+                return
+            blogs = load_blogs()
+            new_blog = {
+                "id": next_blog_id(blogs),
+                "slug": payload["slug"],
+                "title": payload["title"],
+                "excerpt": payload["excerpt"],
+                "content": payload["content"],
+                "author": payload.get("author", "QVSCL Team"),
+                "date": payload.get("date", utc_now()[:10]),
+                "image": payload.get("image", ""),
+                "category": payload.get("category", "General"),
+            }
+            blogs.append(new_blog)
+            save_blogs(blogs)
+            self.send_json({"ok": True, "blog": new_blog}, status=HTTPStatus.CREATED)
             return
 
         if route == "/api/apply":
@@ -204,6 +279,21 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 
         self.send_json({"ok": True, "message": message}, status=HTTPStatus.CREATED)
+
+    def do_DELETE(self):
+        route = urlparse(self.path).path
+        match = re.match(r"^/api/admin/blogs/(\d+)$", route)
+        if not match:
+            self.send_error(HTTPStatus.NOT_FOUND, "Unknown API route")
+            return
+        blog_id = int(match.group(1))
+        blogs = load_blogs()
+        updated = [b for b in blogs if b["id"] != blog_id]
+        if len(updated) == len(blogs):
+            self.send_error(HTTPStatus.NOT_FOUND, "Blog not found")
+            return
+        save_blogs(updated)
+        self.send_json({"ok": True, "message": "Blog deleted"})
 
     def serve_frontend(self, route):
         requested = (FRONTEND_DIR / route.lstrip("/")).resolve()
