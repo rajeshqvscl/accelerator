@@ -238,6 +238,10 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
                 self.send_error(HTTPStatus.NOT_FOUND, "Blog not found")
             return
 
+        if route in ("/", ""):
+            self.send_json({"status": "ok", "message": "QVSCL Accelerator Backend is running"})
+            return
+
         if route.startswith("/api/"):
             self.send_error(HTTPStatus.NOT_FOUND, "Unknown API route")
             return
