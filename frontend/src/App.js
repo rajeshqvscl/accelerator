@@ -297,17 +297,16 @@ function App() {
         ? h(LegalPage, { type: "privacy", navigate })
         : page.view === "terms"
           ? h(LegalPage, { type: "terms", navigate })
-          : h(HomePage, { data, loading, onOpenApply: setModalMode, statIndex, setStatIndex, navigate });
+          : h(HomePage, { data, loading, onOpenApply: () => window.open("https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), statIndex, setStatIndex, navigate });
 
   return h(
     React.Fragment,
     null,
-    h(Header, { data, onOpenApply: setModalMode, navigate, pageView: page.view }),
+    h(Header, { data, onOpenApply: () => window.open("https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), navigate, pageView: page.view }),
     h("div", { id: "glass-bg" }),
     h(ParticleBackground, null),
     mainContent,
-    h(Footer, { data, onOpenApply: setModalMode, navigate }),
-    modalMode && h(ApplicationModal, { mode: modalMode, onClose: () => setModalMode(null) })
+    h(Footer, { data, onOpenApply: () => window.open("https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), navigate })
   );
 }
 
