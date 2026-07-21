@@ -3,7 +3,7 @@ import { createRoot } from "https://esm.sh/react-dom@18.2.0/client";
 
 // API base: relative for local dev, absolute for Render deployment
 const API_BASE_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-  ? ""
+  ? "http://127.0.0.1:4173"
   : "https://accelerator-backend.onrender.com";
 
 const h = React.createElement;

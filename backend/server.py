@@ -178,11 +178,11 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
+        self.send_header("Access-Control-Allow-Origin", "*")
         super().end_headers()
 
     def do_OPTIONS(self):
         self.send_response(HTTPStatus.NO_CONTENT)
-        self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
@@ -236,6 +236,10 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
                 self.send_json(blog)
             else:
                 self.send_error(HTTPStatus.NOT_FOUND, "Blog not found")
+            return
+
+        if route in ("/", ""):
+            self.send_json({"status": "ok", "message": "QVSCL Accelerator Backend is running"})
             return
 
         if route.startswith("/api/"):
