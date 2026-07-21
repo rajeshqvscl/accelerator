@@ -5,3 +5,13 @@ services:
     branch: main
     buildCommand: ""
     publishDir: frontend
+    routes:
+      - type: rewrite
+        source: /assets/*
+        destination: /assets/
+      - type: rewrite
+        source: /src/*
+        destination: /src/
+      - type: rewrite
+        source: /*
+        destination: /index.html
