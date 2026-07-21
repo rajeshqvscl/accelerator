@@ -242,8 +242,8 @@ function App() {
     window.history.pushState({}, "", to);
     if (to.startsWith("/insights/")) setPage({ view: "article", slug: to.replace("/insights/", "") });
     else if (to === "/insights") setPage({ view: "insights" });
-    else if (to === "/privacy-policy") setPage({ view: "privacy" });
-    else if (to === "/terms-of-use") setPage({ view: "terms" });
+    else if (to === "/privacy-policy") { setPage({ view: "privacy" }); window.scrollTo(0, 0); }
+    else if (to === "/terms-of-use") { setPage({ view: "terms" }); window.scrollTo(0, 0); }
     else { setPage({ view: "main" }); window.scrollTo(0, 0); }
   }, [page.view]);
 
@@ -906,6 +906,10 @@ function InsightsPage({ navigate }) {
               key: blog.id,
               className: "blog-card",
               style: { "--cat-color": categoryColors[blog.category] || "var(--green)" },
+              onClick: () => navigate(`/insights/${blog.slug}`),
+              role: "button",
+              tabIndex: 0,
+              onKeyDown: (e) => { if (e.key === "Enter" || e.key === " ") navigate(`/insights/${blog.slug}`); },
             },
               h("div", { className: "blog-card-image" },
                 h("img", {
