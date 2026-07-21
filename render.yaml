@@ -1,0 +1,7 @@
+services:
+  - type: static_site
+    name: qvscl-accelerator-frontend
+    repo: https://github.com/rajeshqvscl/accelerator
+    branch: main
+    buildCommand: ""
+    publishDir: frontend

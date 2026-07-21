@@ -187,12 +187,30 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
+    def serve_index(self):
+        path = FRONTEND_DIR / "index.html"
+        if not path.exists():
+            self.send_error(HTTPStatus.NOT_FOUND, "index.html not found")
+            return
+        data = path.read_bytes()
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def _is_static_file(self, path):
+        ext = Path(path).suffix
+        return bool(ext) and ext in {
+            ".html", ".js", ".css", ".json", ".png", ".jpg", ".jpeg",
+            ".gif", ".svg", ".ico", ".webp", ".avif", ".mp4", ".webm",
+            ".woff", ".woff2", ".ttf", ".eot", ".pdf", ".txt", ".xml",
+            ".webmanifest"
+        }
+
     def do_GET(self):
         route = urlparse(self.path).path
 
-        if route in ("/", ""):
-            self.send_json({"status": "ok", "message": "QVSCL Accelerator Backend is running"})
-            return
         if route == "/api/health":
             self.send_json({"ok": True, "service": "qvscl-accelerator", "time": utc_now()})
             return
@@ -219,7 +237,16 @@ class QVSCLHandler(SimpleHTTPRequestHandler):
             else:
                 self.send_error(HTTPStatus.NOT_FOUND, "Blog not found")
             return
-        self.send_json({"status": "ok", "message": "QVSCL Accelerator Backend is running"})
+
+        if route.startswith("/api/"):
+            self.send_error(HTTPStatus.NOT_FOUND, "Unknown API route")
+            return
+
+        if self._is_static_file(route):
+            super().do_GET()
+            return
+
+        self.serve_index()
 
     def do_POST(self):
         route = urlparse(self.path).path

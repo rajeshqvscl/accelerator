@@ -19,10 +19,9 @@ const fallbackData = {
     phone: "9810646388",
   },
   stats: [
-    { value: "50+", label: "Portfolio Companies", detail: "Building the future ecosystem" },
-    { value: "₹500Cr+", label: "Capital Deployed", detail: "Across promising ventures" },
-    { value: "85%", label: "Follow-on Rate", detail: "Founder success ratio" },
-    { value: "18mo", label: "Avg to Series A", detail: "Accelerated timeline" },
+    { value: "25-50L", label: "Avg ticket size", detail: "For portfolio companies" },
+    { value: "5+", label: "Active Mentors", detail: "Across domains and functions" },
+    { value: "15+", label: "Industry Verticals", detail: "Deep tech, health, fintech" },
   ],
   programs: [
     {
@@ -111,22 +110,14 @@ const fallbackData = {
 
 const statCycles = [
   [
-    { value: "50+", label: "Portfolio Companies", detail: "Building the future ecosystem" },
-    { value: "₹500Cr+", label: "Capital Deployed", detail: "Across promising ventures" },
-    { value: "85%", label: "Follow-on Rate", detail: "Founder success ratio" },
-    { value: "18mo", label: "Avg to Series A", detail: "Accelerated timeline" },
-  ],
-  [
     { value: "2", label: "Founder pathways", detail: "Venture studio and accelerator" },
     { value: "4", label: "Support pillars", detail: "Build, mentor, fundraise, scale" },
     { value: "3", label: "Portfolio signals", detail: "GoAid, LabBuddy, WeSkills" },
-    { value: "12wk", label: "Cohort blueprint", detail: "Validation to investor readiness" },
   ],
   [
-    { value: "₹10Cr+", label: "Avg Round Size", detail: "For portfolio companies" },
-    { value: "20+", label: "Active Mentors", detail: "Across domains and functions" },
-    { value: "6+", label: "Industry Verticals", detail: "Deep tech, health, fintech" },
-    { value: "3yr", label: "Founder Journey", detail: "Idea to Series A track" },
+    { value: "25-50L", label: "Avg ticket size", detail: "For portfolio companies" },
+    { value: "5+", label: "Active Mentors", detail: "Across domains and functions" },
+    { value: "15+", label: "Industry Verticals", detail: "Deep tech, health, fintech" },
   ],
 ];
 
@@ -228,6 +219,8 @@ function App() {
     const path = window.location.pathname;
     if (path.startsWith("/insights/")) return { view: "article", slug: path.replace("/insights/", "") };
     if (path === "/insights") return { view: "insights" };
+    if (path === "/privacy-policy") return { view: "privacy" };
+    if (path === "/terms-of-use") return { view: "terms" };
     return { view: "main" };
   });
 
@@ -249,7 +242,9 @@ function App() {
     window.history.pushState({}, "", to);
     if (to.startsWith("/insights/")) setPage({ view: "article", slug: to.replace("/insights/", "") });
     else if (to === "/insights") setPage({ view: "insights" });
-    else setPage({ view: "main" });
+    else if (to === "/privacy-policy") setPage({ view: "privacy" });
+    else if (to === "/terms-of-use") setPage({ view: "terms" });
+    else { setPage({ view: "main" }); window.scrollTo(0, 0); }
   }, [page.view]);
 
   useEffect(() => {
@@ -257,6 +252,8 @@ function App() {
       const path = window.location.pathname;
       if (path.startsWith("/insights/")) setPage({ view: "article", slug: path.replace("/insights/", "") });
       else if (path === "/insights") setPage({ view: "insights" });
+      else if (path === "/privacy-policy") setPage({ view: "privacy" });
+      else if (path === "/terms-of-use") setPage({ view: "terms" });
       else setPage({ view: "main" });
     };
     window.addEventListener("popstate", onPopState);
@@ -296,7 +293,11 @@ function App() {
     ? h(InsightsPage, { navigate })
     : page.view === "article"
       ? h(BlogPostPage, { slug: page.slug, navigate })
-      : h(HomePage, { data, loading, onOpenApply: setModalMode, statIndex, setStatIndex, navigate });
+      : page.view === "privacy"
+        ? h(LegalPage, { type: "privacy", navigate })
+        : page.view === "terms"
+          ? h(LegalPage, { type: "terms", navigate })
+          : h(HomePage, { data, loading, onOpenApply: setModalMode, statIndex, setStatIndex, navigate });
 
   return h(
     React.Fragment,
@@ -339,7 +340,6 @@ function HomePage({ data, loading, onOpenApply, statIndex, setStatIndex }) {
     h(PortfolioSection, { portfolio: data.portfolio }),
     h(ApproachSection, { approach: data.approach }),
     h(JourneySection, { journey: data.journey }),
-    h(ResourcesEvents, { resources: data.resources, events: data.events }),
     h(FounderCTA, { onOpenApply }),
     h(ContactSection, { data })
   );
@@ -356,33 +356,10 @@ function Header({ data, onOpenApply, navigate, pageView }) {
       items: [
         { label: "Venture Studio", href: "#programs", body: "Co-create and build from zero to launch." },
         { label: "Accelerator", href: "#programs", body: "Cohort support for early-stage startups." },
-        { label: "Founder Support", href: "#journey", body: "Validation, GTM, funding, and scale." },
-      ],
-    },
-    {
-      label: "Programs",
-      items: [
-        { label: "Studio Build Sprint", href: "#journey", body: "Hands-on venture building rhythm." },
-        { label: "Cohort Accelerator", href: "#journey", body: "A 12-week investor readiness path." },
-        { label: "Mentor Network", href: "#approach", body: "Expert access across functions." },
       ],
     },
     { label: "Portfolio", href: "#portfolio" },
-    {
-      label: "Insights",
-      items: [
-        { label: "All Insights", href: "/insights", body: "Browse all articles and updates from QVSCL." },
-        { label: "Founder Guides", href: "/insights", body: "Practical guides for building and fundraising." },
-      ],
-    },
-    {
-      label: "Resources",
-      items: [
-        { label: "Guides", href: "#resources", body: "Founder playbooks and checklists." },
-        { label: "Events", href: "#events", body: "Office hours, workshops, demo prep." },
-        { label: "LinkedIn", href: data.brand.linkedin, body: "Follow QVSCL company updates." },
-      ],
-    },
+    { label: "Insights", href: "/insights" },
     { label: "Contact", href: "#contact" },
   ], [data.brand.linkedin]);
 
@@ -559,21 +536,21 @@ function AboutSection({ data }) {
   return h("section", { className: "about-section page-pad", id: "about" },
     h("div", { className: "section-heading scroll-in" },
       h("p", { className: "eyebrow" }, "Who We Are"),
-      h("h2", null, "Your Trusted Partner for Capital Growth")
+      h("h2", null, "Building the Next Generation of High-Growth Startups")
     ),
     h("div", { className: "about-content" },
-      h("p", null, "At QVSCL, we go beyond traditional consulting and investment banking—we serve as trusted strategic partners, committed to guiding your business toward sustained growth and success. With a comprehensive understanding of financial markets, corporate strategy, and industry dynamics, we help businesses navigate challenges, seize opportunities, and realize their full potential."),
-      h("p", null, "From securing capital and executing mergers and acquisitions to refining business strategies, we provide tailored, results-driven solutions designed to create lasting impact."),
-      h("p", null, "Our approach is grounded in expertise, innovation, and strategic foresight. We don't simply offer advice; we collaborate with you, aligning our insights with your vision, mitigating risks, and crafting solutions that generate real value. With access to a strong global network, in-depth market intelligence, and proven execution capabilities, we empower organizations to remain competitive in an ever-changing business environment.")
+      h("p", null, "At QVSCL Accelerator, we work with ambitious founders who are building innovative businesses with the potential to create meaningful impact. Through structured programs, practical mentorship, and access to a growing network of industry experts, investors, and ecosystem partners, we help startups move from promising ideas to investment-ready ventures."),
+      h("p", null, "Our focus is on supporting founders through the critical early stages of their journey—refining business models, validating markets, strengthening execution, and preparing for sustainable growth. Every startup has unique challenges, and our approach is designed to provide practical guidance tailored to each venture's needs."),
+      h("p", null, "As part of the broader QVSCL ecosystem, we combine entrepreneurial support with strategic business insights, creating an environment where founders can learn, build, connect, and grow with confidence.")
     ),
     h("div", { className: "about-highlights" },
       h("div", { className: "highlight-item" },
-        h("h3", null, "Strategic Consulting for a Competitive Edge"),
-        h("p", null, "Having a clear and effective strategy is essential. Our consulting services focus on corporate finance and strategic advisory, providing organizations with the insights needed to navigate complexities, improve efficiency, and achieve long-term growth. From capital structuring and cost optimization to business transformation, we deliver actionable solutions that help our clients stay ahead of the competition.")
+        h("h3", null, "Founder-Centric Programs"),
+        h("p", null, "Our programs are designed to help early-stage startups validate ideas, build scalable business models, and accelerate execution. Through expert-led workshops, one-on-one mentorship, peer learning, and structured milestones, founders receive practical support at every stage of their entrepreneurial journey.")
       ),
       h("div", { className: "highlight-item" },
-        h("h3", null, "Investment Banking Excellence"),
-        h("p", null, "Specializing in equity funding, mergers & acquisitions (M&A), and private equity advisory, we ensure that businesses have access to the right capital, strategic investors, and transformative opportunities. Our expertise lies in structuring deals that drive growth, optimize financial performance, and unlock new avenues for success.")
+        h("h3", null, "Access to Capital & Ecosystem"),
+        h("p", null, "We connect promising startups with a growing network of investors, mentors, industry leaders, and strategic partners. By helping founders strengthen their investment readiness and build meaningful relationships, we aim to create opportunities for long-term growth and collaboration.")
       )
     )
   );
@@ -587,7 +564,14 @@ function ProgramSection({ programs, onOpenApply }) {
       h("p", null, "A venture studio track for building from the ground up, and an accelerator track for startups ready to sharpen growth and funding execution.")
     ),
     h("div", { className: "program-grid" },
-      programs.map((program) => h("article", { className: `program-card ${program.accent}`, key: program.title },
+      programs.map((program) => h("article", {
+        className: `program-card ${program.accent}`,
+        key: program.title,
+        onClick: () => onOpenApply(program.accent === "green" ? "studio" : "founder"),
+        role: "button",
+        tabIndex: 0,
+        onKeyDown: (e) => { if (e.key === "Enter" || e.key === " ") onOpenApply(program.accent === "green" ? "studio" : "founder"); }
+      },
         h("div", { className: "program-icon" }, h(Icon, { name: program.icon, size: 28 })),
         h("div", { className: "program-body" },
           h("p", { className: "program-eyebrow" }, program.eyebrow),
@@ -599,7 +583,7 @@ function ProgramSection({ programs, onOpenApply }) {
               h("span", null, feature)
             ))
           ),
-          h("button", { className: "text-link", type: "button", onClick: () => onOpenApply(program.accent === "green" ? "studio" : "founder") },
+          h("button", { className: "text-link", type: "button", onClick: (e) => { e.stopPropagation(); onOpenApply(program.accent === "green" ? "studio" : "founder"); } },
             program.accent === "green" ? "Explore Venture Studio" : "Explore Accelerator",
             h(Icon, { name: "arrowRight", size: 16 })
           )
@@ -630,10 +614,6 @@ function PortfolioSection({ portfolio }) {
           h("p", { className: "portfolio-detail" }, company.detail)
         )
       ))
-    ),
-    h("a", { className: "text-link", href: "#contact" },
-      "View Portfolio",
-      h(Icon, { name: "arrowRight", size: 16 })
     )
   );
 }
@@ -1030,6 +1010,59 @@ function formatDate(dateStr) {
   return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
+const legalContent = {
+  privacy: {
+    title: "Privacy Policy",
+    body: [
+      { heading: "Information We Collect", text: "We collect personal information you voluntarily provide when you fill out forms on our website, including your name, email address, phone number, and company details. We also collect anonymized usage data such as page views, browser type, and device information to improve our website experience." },
+      { heading: "How We Use Your Information", text: "The information we collect is used to respond to your inquiries, process applications for our accelerator and venture studio programs, send relevant updates about our programs and events, improve our website and services based on usage patterns, and comply with legal obligations." },
+      { heading: "Data Sharing and Disclosure", text: "We do not sell, trade, or rent your personal information to third parties. We may share your information with trusted partners who assist us in operating our website and programs, provided they agree to keep your information confidential. We may also disclose information when required by law." },
+      { heading: "Data Security", text: "We implement reasonable security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the internet is completely secure, and we cannot guarantee absolute security." },
+      { heading: "Cookies", text: "We use essential cookies to ensure the proper functioning of our website. We may also use analytics cookies to understand how visitors interact with our site. You can control cookie preferences through your browser settings." },
+      { heading: "Your Rights", text: "You have the right to access, correct, or delete your personal information held by us. You may also withdraw consent for communications at any time by contacting us at info@qvscl.com." },
+      { heading: "Changes to This Policy", text: "We may update this privacy policy from time to time. Any changes will be posted on this page with the updated effective date." },
+      { heading: "Contact Us", text: "If you have any questions about this Privacy Policy, please contact us at info@qvscl.com or at our registered address: 5th floor, Adani Miracle Miles, 507, Sector 60, Gurugram, Haryana 122098." },
+    ],
+  },
+  terms: {
+    title: "Terms of Use",
+    body: [
+      { heading: "Acceptance of Terms", text: "By accessing and using the QVSCL Accelerator website, you agree to be bound by these Terms of Use. If you do not agree with any part of these terms, you should not use our website or services." },
+      { heading: "Services Description", text: "QVSCL Accelerator & Venture Studio provides startup acceleration programs, venture studio services, mentorship, and access to investor networks. The specific terms of each program are outlined in separate program agreements." },
+      { heading: "Eligibility", text: "Our programs are open to founders, entrepreneurs, and startups that meet the criteria specified in each program application. We reserve the right to accept or reject any application at our discretion." },
+      { heading: "Intellectual Property", text: "All content on this website, including text, graphics, logos, and software, is the property of QVSCL Accelerator unless otherwise stated. You may not reproduce, distribute, or modify any content without prior written consent." },
+      { heading: "Application and Program Participation", text: "Submitting an application does not guarantee acceptance into any program. Participants selected for programs must comply with all program rules, timelines, and obligations as outlined in their program agreement." },
+      { heading: "Limitation of Liability", text: "QVSCL Accelerator shall not be liable for any indirect, incidental, or consequential damages arising from your use of this website or participation in our programs. Our total liability shall not exceed the fees paid by you, if any, for our services." },
+      { heading: "Third-Party Links", text: "Our website may contain links to third-party websites. We are not responsible for the content, privacy practices, or terms of those websites." },
+      { heading: "Modifications", text: "We reserve the right to modify these Terms of Use at any time. Continued use of the website after changes constitutes acceptance of the new terms." },
+      { heading: "Governing Law", text: "These terms shall be governed by and construed in accordance with the laws of India. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts in Gurugram, Haryana." },
+    ],
+  },
+};
+
+function LegalPage({ type, navigate }) {
+  const content = legalContent[type];
+  return h("main", { className: "legal-page page-pad" },
+    h("div", { className: "legal-back" },
+      h("a", { className: "text-link", href: "/", onClick: (e) => { e.preventDefault(); navigate("/"); } },
+        h(Icon, { name: "arrowRight", size: 16, className: "back-arrow" }),
+        "Back to Home"
+      )
+    ),
+    h("h1", null, content.title),
+    h("hr", { className: "legal-divider" }),
+    content.body.map((section, i) =>
+      h("div", { className: "legal-section", key: i },
+        h("h2", null, section.heading),
+        h("p", null, section.text)
+      )
+    ),
+    h("div", { className: "legal-footer" },
+      h("p", null, "© 2026 QVSCL Accelerator & Venture Studio. All rights reserved.")
+    )
+  );
+}
+
 function Footer({ data, onOpenApply, navigate }) {
   return h("footer", { className: "site-footer" },
     h("div", { className: "footer-top page-pad" },
@@ -1047,8 +1080,7 @@ function Footer({ data, onOpenApply, navigate }) {
       ),
       h("div", { className: "footer-links" },
         h(FooterColumn, { title: "Company", links: [{ label: "About Us", href: "#about" }, { label: "Blog", href: "/insights" }], navigate }),
-        h(FooterColumn, { title: "Programs", links: [{ label: "Venture Studio", href: "#programs" }, { label: "Accelerator", href: "#programs" }], navigate }),
-        h(FooterColumn, { title: "Resources", links: [{ label: "Guides", href: "#resources" }, { label: "Events", href: "#events" }], navigate })
+        h(FooterColumn, { title: "Programs", links: [{ label: "Venture Studio", href: "#programs" }, { label: "Accelerator", href: "#programs" }], navigate })
       ),
       h("div", { className: "footer-contact" },
         h("h3", null, "Contact Info"),
@@ -1069,8 +1101,8 @@ function Footer({ data, onOpenApply, navigate }) {
     ),
     h("div", { className: "footer-bottom page-pad" },
       h("span", null, "© 2026 QVSCL Accelerator & Venture Studio. All rights reserved."),
-      h("span", null, "Privacy Policy"),
-      h("span", null, "Terms of Use")
+      h("a", { href: "/privacy-policy", onClick: (e) => { e.preventDefault(); navigate("/privacy-policy"); } }, "Privacy Policy"),
+      h("a", { href: "/terms-of-use", onClick: (e) => { e.preventDefault(); navigate("/terms-of-use"); } }, "Terms of Use")
     )
   );
 }
