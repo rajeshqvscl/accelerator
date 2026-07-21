@@ -297,16 +297,16 @@ function App() {
         ? h(LegalPage, { type: "privacy", navigate })
         : page.view === "terms"
           ? h(LegalPage, { type: "terms", navigate })
-          : h(HomePage, { data, loading, onOpenApply: () => window.open("https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), statIndex, setStatIndex, navigate });
+          : h(HomePage, { data, loading, onOpenApply: (type) => window.open(type === "partner" ? "https://forms.gle/z4C3VUzxyWaJ7kw98" : "https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), statIndex, setStatIndex, navigate });
 
   return h(
     React.Fragment,
     null,
-    h(Header, { data, onOpenApply: () => window.open("https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), navigate, pageView: page.view }),
+    h(Header, { data, onOpenApply: (type) => window.open(type === "partner" ? "https://forms.gle/z4C3VUzxyWaJ7kw98" : "https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), navigate, pageView: page.view }),
     h("div", { id: "glass-bg" }),
     h(ParticleBackground, null),
     mainContent,
-    h(Footer, { data, onOpenApply: () => window.open("https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), navigate })
+    h(Footer, { data, onOpenApply: (type) => window.open(type === "partner" ? "https://forms.gle/z4C3VUzxyWaJ7kw98" : "https://forms.gle/ZiairZ8uJSGjQab78", "_blank"), navigate })
   );
 }
 
