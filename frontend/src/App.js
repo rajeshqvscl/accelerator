@@ -242,8 +242,8 @@ function App() {
     window.history.pushState({}, "", to);
     if (to.startsWith("/insights/")) setPage({ view: "article", slug: to.replace("/insights/", "") });
     else if (to === "/insights") setPage({ view: "insights" });
-    else if (to === "/privacy-policy") { setPage({ view: "privacy" }); window.scrollTo(0, 0); }
-    else if (to === "/terms-of-use") { setPage({ view: "terms" }); window.scrollTo(0, 0); }
+    else if (to === "/privacy-policy") setPage({ view: "privacy" });
+    else if (to === "/terms-of-use") setPage({ view: "terms" });
     else { setPage({ view: "main" }); window.scrollTo(0, 0); }
   }, [page.view]);
 
@@ -1045,6 +1045,7 @@ const legalContent = {
 };
 
 function LegalPage({ type, navigate }) {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
   const content = legalContent[type];
   return h("main", { className: "legal-page page-pad" },
     h("div", { className: "legal-back" },
