@@ -1284,8 +1284,8 @@ function ParticleBackground() {
 
     // --- Orbs (large animated glows) ---
     const orbs = [
-      { x: 0.12, y: 0.20, r: 0.38, color: [6, 180, 80],   speed: 0.00007, phase: 0 },
-      { x: 0.88, y: 0.75, r: 0.32, color: [4, 130, 60],   speed: 0.00009, phase: 2.1 },
+      { x: 0.12, y: 0.20, r: 0.38, color: [6, 180, 80], speed: 0.00007, phase: 0 },
+      { x: 0.88, y: 0.75, r: 0.32, color: [4, 130, 60], speed: 0.00009, phase: 2.1 },
       { x: 0.45, y: 0.55, r: 0.26, color: [20, 200, 120], speed: 0.00006, phase: 4.2 },
       { x: 0.75, y: 0.15, r: 0.18, color: [61, 214, 140], speed: 0.00007, phase: 1.5 },
     ];
@@ -1296,7 +1296,7 @@ function ParticleBackground() {
     let particles = [];
 
     const resize = () => {
-      canvas.width  = window.innerWidth;
+      canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
     resize();
@@ -1304,11 +1304,11 @@ function ParticleBackground() {
 
     for (let i = 0; i < COUNT; i++) {
       particles.push({
-        x:  Math.random() * window.innerWidth,
-        y:  Math.random() * window.innerHeight,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
         vx: (Math.random() - 0.5) * 0.3,
         vy: (Math.random() - 0.5) * 0.3,
-        r:  Math.random() * 1.2 + 0.4,
+        r: Math.random() * 1.2 + 0.4,
       });
     }
 
@@ -1326,9 +1326,9 @@ function ParticleBackground() {
         const radius = orb.r * Math.max(W, H);
         const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
         const [r, g, b] = orb.color;
-        grad.addColorStop(0,   `rgba(${r},${g},${b},0.15)`);
+        grad.addColorStop(0, `rgba(${r},${g},${b},0.15)`);
         grad.addColorStop(0.4, `rgba(${r},${g},${b},0.08)`);
-        grad.addColorStop(1,   `rgba(${r},${g},${b},0)`);
+        grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fillStyle = grad;
