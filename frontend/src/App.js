@@ -216,6 +216,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [modalMode, setModalMode] = useState(null);
   const [statIndex, setStatIndex] = useState(0);
+  const BASE_PATH = "/accelerator";
   const [page, setPage] = useState(() => {
     const path = window.location.pathname.replace(BASE_PATH, "") || "/";
     if (path.startsWith("/insights/")) return { view: "article", slug: path.replace("/insights/", "") };
@@ -455,7 +456,7 @@ function InteractiveLogo({ brand, navigate }) {
       onClick: (e) => { e.preventDefault(); navigate("/"); },
       "aria-label": `${brand.name} home`,
     },
-    h("img", { src: "./assets/qvscl-logo-white.png", alt: "", className: "logo-image" })
+    h("img", { src: "/accelerator/assets/qvscl-logo-white.png", alt: "", className: "logo-image" })
   );
 }
 
