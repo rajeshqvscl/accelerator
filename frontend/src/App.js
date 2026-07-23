@@ -42,9 +42,9 @@ const fallbackData = {
     },
   ],
   portfolio: [
-    { name: "GoAid", focus: "Emergency assistance and response", signal: "Impact-led mobility support", detail: "GoAid provides rapid emergency ambulance services with real-time tracking and AI-based dispatch, ensuring critical care reaches those in need within the golden hour.", image: "/assets/portfolio-goaid.png", color: "#ef233c" },
-    { name: "LabBuddy", focus: "Learning and laboratory enablement", signal: "Education and skill access", detail: "LabBuddy is a digital platform connecting students and professionals with hands-on lab experiments, virtual simulations, and skill-based certification programs.", image: "/assets/portfolio-labbuddy.jpeg", color: "#1d9a8a" },
-    { name: "WeSkills", focus: "Workforce empowerment and hiring", signal: "Talent-to-industry bridge", detail: "WeSkills is a workforce empowerment platform connecting talent with industry through skill assessments, micro-credentials, and direct hiring pipelines, enabling career growth for the modern workforce.", image: "/assets/portfolio-weskills.webp", color: "#e94e1b" },
+    { name: "GoAid", focus: "Emergency assistance and response", signal: "Impact-led mobility support", detail: "GoAid provides rapid emergency ambulance services with real-time tracking and AI-based dispatch, ensuring critical care reaches those in need within the golden hour.", image: "./assets/portfolio-goaid.png", color: "#ef233c" },
+    { name: "LabBuddy", focus: "Learning and laboratory enablement", signal: "Education and skill access", detail: "LabBuddy is a digital platform connecting students and professionals with hands-on lab experiments, virtual simulations, and skill-based certification programs.", image: "./assets/portfolio-labbuddy.jpeg", color: "#1d9a8a" },
+    { name: "WeSkills", focus: "Workforce empowerment and hiring", signal: "Talent-to-industry bridge", detail: "WeSkills is a workforce empowerment platform connecting talent with industry through skill assessments, micro-credentials, and direct hiring pipelines, enabling career growth for the modern workforce.", image: "./assets/portfolio-weskills.webp", color: "#e94e1b" },
   ],
   approach: [
     {
@@ -454,7 +454,7 @@ function InteractiveLogo({ brand, navigate }) {
       onClick: (e) => { e.preventDefault(); navigate("/"); },
       "aria-label": `${brand.name} home`,
     },
-    h("img", { src: "/assets/qvscl-logo-white.png", alt: "", className: "logo-image" })
+    h("img", { src: "./assets/qvscl-logo-white.png", alt: "", className: "logo-image" })
   );
 }
 
@@ -492,7 +492,7 @@ function DropdownPanel({ items, onClose, navigate }) {
 function Hero({ data, loading, onOpenApply }) {
   return h("section", { className: "hero", id: "home" },
     h("video", { className: "hero-video", autoPlay: true, muted: true, loop: true, playsInline: true, preload: "auto" },
-      h("source", { src: "/assets/hero-bg.mp4", type: "video/mp4" })
+      h("source", { src: "./assets/hero-bg.mp4", type: "video/mp4" })
     ),
     h("div", { className: "hero-scrim" }),
     h("div", { className: "hero-content page-pad" },
