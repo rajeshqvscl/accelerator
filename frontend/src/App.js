@@ -7,6 +7,7 @@ const API_BASE_URL = window.location.hostname === "127.0.0.1" || window.location
   : "https://accelerator-backend.onrender.com";
 
 const h = React.createElement;
+const BASE_PATH = "/accelerator";
 
 const fallbackData = {
   brand: {
@@ -216,7 +217,7 @@ function App() {
   const [modalMode, setModalMode] = useState(null);
   const [statIndex, setStatIndex] = useState(0);
   const [page, setPage] = useState(() => {
-    const path = window.location.pathname;
+    const path = window.location.pathname.replace(BASE_PATH, "") || "/";
     if (path.startsWith("/insights/")) return { view: "article", slug: path.replace("/insights/", "") };
     if (path === "/insights") return { view: "insights" };
     if (path === "/privacy-policy") return { view: "privacy" };
@@ -227,7 +228,7 @@ function App() {
   const navigate = useCallback((to) => {
     if (to.startsWith("#")) {
       if (page.view !== "main") {
-        window.history.pushState({}, "", "/");
+        window.history.pushState({}, "", BASE_PATH);
         setPage({ view: "main" });
         requestAnimationFrame(() => {
           const el = document.querySelector(to);
@@ -239,7 +240,7 @@ function App() {
       }
       return;
     }
-    window.history.pushState({}, "", to);
+    window.history.pushState({}, "", `${BASE_PATH}${to}`);
     if (to.startsWith("/insights/")) setPage({ view: "article", slug: to.replace("/insights/", "") });
     else if (to === "/insights") setPage({ view: "insights" });
     else if (to === "/privacy-policy") setPage({ view: "privacy" });
@@ -249,7 +250,7 @@ function App() {
 
   useEffect(() => {
     const onPopState = () => {
-      const path = window.location.pathname;
+      const path = window.location.pathname.replace(BASE_PATH, "") || "/";
       if (path.startsWith("/insights/")) setPage({ view: "article", slug: path.replace("/insights/", "") });
       else if (path === "/insights") setPage({ view: "insights" });
       else if (path === "/privacy-policy") setPage({ view: "privacy" });
