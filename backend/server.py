@@ -91,7 +91,7 @@ SITE_DATA = {
             "focus": "Emergency assistance and response",
             "signal": "Impact-led mobility support",
             "detail": "GoAid provides rapid emergency ambulance services with real-time tracking and AI-based dispatch, ensuring critical care reaches those in need within the golden hour.",
-            "image": "/accelerator/portfolio-goaid.png",
+            "image": "/accelerator/assets/portfolio-goaid.png",
             "color": "#ef233c",
         },
         {
@@ -99,7 +99,7 @@ SITE_DATA = {
             "focus": "Learning and laboratory enablement",
             "signal": "Education and skill access",
             "detail": "LabBuddy is a digital platform connecting students and professionals with hands-on lab experiments, virtual simulations, and skill-based certification programs.",
-            "image": "/accelerator/portfolio-labbuddy.jpeg",
+            "image": "/accelerator/assets/portfolio-labbuddy.jpeg",
             "color": "#1d9a8a",
         },
         {
@@ -107,7 +107,7 @@ SITE_DATA = {
             "focus": "Workforce empowerment and hiring",
             "signal": "Talent-to-industry bridge",
             "detail": "WeSkills is a workforce empowerment platform connecting talent with industry through skill assessments, micro-credentials, and direct hiring pipelines, enabling career growth for the modern workforce.",
-            "image": "/accelerator/portfolio-weskills.webp",
+            "image": "/accelerator/assets/portfolio-weskills.webp",
             "color": "#e94e1b",
         },
     ],
